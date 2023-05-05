@@ -1,4 +1,4 @@
-from flask import Flask, json, request, jsonify
+from flask import Flask, json, request, jsonify,render_template
 import os
 import urllib.request
 from werkzeug.utils import secure_filename
@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 import cv2 as cv
 import pytesseract
 import sys 
-app = Flask(__name__)
+app = Flask(__name__,template_folder='templates')
  
 app.secret_key = "caircocoders-ednalan"
  
@@ -26,6 +26,7 @@ def home():
  
 @app.route('/get-text', methods=['POST'])
 def upload_file():
+    
     # check if the post request has the file part
     if 'files[]' not in request.files:
         resp = jsonify({'message' : 'No file part in the request'})
@@ -35,6 +36,7 @@ def upload_file():
     files = request.files.getlist('files[]')
      
     errors = {}
+    # dict_obj= {}
     success = False
      
     for file in files:      
@@ -44,10 +46,10 @@ def upload_file():
             success = True
 
             try:
-                imag = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                print("imag : ",imag)
-                img = cv.imread(imag)
-                text = pytesseract.image_to_string(img)
+                image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                print("image_path : ",image_path)
+                image = cv.imread(image_path)
+                text = pytesseract.image_to_string(image)
 
                 output = text.strip()
                 output = output.replace("\n'","")
@@ -56,8 +58,8 @@ def upload_file():
                 result ={
                 "text" : output
                 }
-                # return jsonify(result)
-                # res.append(result)
+                # dict_obj.update(result)
+
             except Exception as e:
                 print("Img is not found",e)
                 pass
