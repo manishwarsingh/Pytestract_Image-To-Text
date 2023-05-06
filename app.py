@@ -1,11 +1,12 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, json
 import os
 import urllib.request
 
 from werkzeug.utils import secure_filename
+from werkzeug.datastructures import ImmutableMultiDict
 
 import cv2 as cv
-
+import requests
 import pytesseract
 import sys 
 app = Flask(__name__)
@@ -31,12 +32,20 @@ def home():
 def upload_file():
     
     # check if the post request has the file part
-    if 'file' not in request.files:
-        resp = jsonify({'message' : 'No file part in the request'})
-        resp.status_code = 400
-        return resp
+    # if 'file' not in request.files:
+    #     resp = jsonify({'message' : 'No file part in the request'})
+    #     resp.status_code = 400
+    #     return resp
+    my_files = request.files
+    imd = ImmutableMultiDict(my_files)
+    imd1 = imd.to_dict(flat=False)
+    file_key = ''
+    for key in imd1:
+        file_key = key
+    files = request.files.getlist(file_key)
  
-    files = request.files.getlist('file')
+    # files = request.files.getlist('file')
+    print(files)
      
     errors = {}
     success = False
@@ -84,6 +93,7 @@ def upload_file():
         resp = jsonify(errors)
         resp.status_code = 500
         return resp
- 
+
+
 if __name__ == '__main__':
     app.run(debug=True)
