@@ -11,7 +11,7 @@ import pytesseract
 import sys 
 app = Flask(__name__)
  
-app.secret_key = "caircocoders-ednalan"
+app.secret_key = "thakur_programmer__77"
  
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -26,19 +26,10 @@ def allowed_file(filename):
 @app.route('/')
 def home():
     # return render_template('index.html')
-    return '<h2 style=text-align:center; > Hello!! welcome to my Homepage!!</h2>'
+    return '<h2 style=text-align:center; > Hola!! welcome to my Homepage!!</h2>'
  
 @app.route('/get-text', methods=['POST'])
 def upload_file():
-    
-    # check if the post request has the file part
-    # if 'file' not in request.files:
-    #     resp = jsonify({'message' : 'No file part in the request'})
-    #     resp.status_code = 400
-    #     return resp
-    # files = request.files.getlist('file')
-    ''' Both logics are but the diffreence is above logic contains the files must during 
-     test the api into the postman!! { " the below logic doesn;t need to pass the files name into the postman during the api "} '''
     
     my_files = request.files
     imd = ImmutableMultiDict(my_files)
@@ -47,8 +38,7 @@ def upload_file():
     for key in imd1:
         file_key = key
     files = request.files.getlist(file_key)
-
-
+ 
     print(files)
      
     errors = {}
@@ -80,7 +70,6 @@ def upload_file():
                 print(f"error pytesserct not installed ! Install this package to resolve above error 'pip3 install pytesseract'")
                 pass
 
-            # return jsonify(result)
         else:
             errors[file.filename] = 'File type is not allowed'
  
@@ -97,7 +86,22 @@ def upload_file():
         resp = jsonify(errors)
         resp.status_code = 500
         return resp
-
+""" Test the api is this working or not."""
+@app.route('/api_testing')
+def api_test():
+    url = "http://167.71.4.12:5000/get-text"
+    payload={}
+    files=[
+      ('file',('download.png',open('/home/dev09/Downloads/post.png','rb'),'image/png'))
+    ]
+    response = requests.request("POST", url, data=payload, files=files)
+    print('response = ', response.text)
+    json_obj = json.loads(response.text)
+    return jsonify(
+        message = str(json_obj['text']),
+        is_error = False,
+        status = 200,
+    )
 
 if __name__ == '__main__':
     app.run(debug=True)
