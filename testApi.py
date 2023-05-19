@@ -86,7 +86,7 @@ def upload_file():
         resp = jsonify(errors)
         resp.status_code = 500
         return resp
-""" Test the api is this working or not."""
+""" Testing the api working or not."""
 @app.route('/api_testing')
 def api_test():
     url = "http://167.71.4.12:5000/get-text"
